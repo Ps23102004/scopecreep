@@ -5,6 +5,7 @@ Shared by the CLI and the dashboard server so both take exactly the same path.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -70,7 +71,15 @@ class CheckResult:
 
 
 def _chain_config(model: str | None) -> ChainConfig:
-    """A one-off single-tier chain for `model`, else the configured cascade."""
+    """A one-off single-tier chain for `model` (explicit arg, then
+    SCOPECREEP_MODEL env var), else the configured cascade in chains.yaml.
+
+    chains.yaml ships pointed at whatever model was on the machine that
+    built this repo — it almost certainly isn't what you have pulled.
+    Set SCOPECREEP_MODEL to your own Ollama tag (works for both `check`
+    and `serve`, no code edit needed) rather than editing chains.yaml.
+    """
+    model = model or os.environ.get("SCOPECREEP_MODEL")
     if model:
         return ChainConfig(
             name="user-selected",

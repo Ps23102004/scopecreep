@@ -55,8 +55,11 @@ network. Drop the `-m` filter to also run the tests marked `network`.
 
 ## Prerequisites
 
-- **[Ollama](https://ollama.com/)** running at `127.0.0.1:11434` with the judge model
-  pulled: `ollama pull gemma4:e4b-mlx`. Edit `chains.yaml` to point at any tag you have.
+- **[Ollama](https://ollama.com/)** running at `127.0.0.1:11434` with a judge model
+  pulled. `chains.yaml` ships pointed at whatever model was on the machine that built
+  this repo (currently `gemma4:e2b-mlx`) — you almost certainly don't have that exact
+  tag. Set `SCOPECREEP_MODEL=<your tag>` (works for both `check` and `serve`, e.g.
+  `SCOPECREEP_MODEL=llama3.2 scopecreep serve`) instead of editing `chains.yaml`.
 - **[llm-ladder](https://github.com/Ps23102004/llm-ladder)** — installed automatically by
   `pip install -e .` (it's a git dependency in `pyproject.toml`). ScopeCreep uses its
   cascade as the judge and its ledger as the receipt. It escalates tiers only when the
@@ -74,6 +77,7 @@ scopecreep check owner/repo#123 --md --out review.md
 scopecreep check owner/repo#123 --model llama3.2   # override the judge for one run
 scopecreep serve                             # dashboard on http://127.0.0.1:8200
 SCOPECREEP_PORT=8300 scopecreep serve        # dashboard on a different port
+SCOPECREEP_MODEL=llama3.2 scopecreep serve   # use your own model, not the shipped default
 scopecreep readme-sample                     # refresh this README's example block
 ```
 
