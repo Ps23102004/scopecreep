@@ -1,0 +1,12 @@
+# Tiers must be real Ollama-pulled model tags (llm-ladder talks to Ollama's
+# native /api/chat). gemma4:e4b-mlx is the local model on this machine
+# (Ollama, :11434) — same convention as cvewatch-local/chains.yaml.
+#
+# One tier is deliberate: classifying a file group is a small, well-bounded
+# judgement. If tier 0 starts disagreeing with itself on real PRs, add a
+# second tier here — the cascade will escalate on its own.
+chains:
+  judge:
+    - model: gemma4:e4b-mlx
+      samples: 3
+      threshold: 0.7

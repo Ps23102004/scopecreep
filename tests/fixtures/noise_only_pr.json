@@ -1,0 +1,32 @@
+{
+  "pr": {
+    "number": 3,
+    "title": "chore: bump dependencies",
+    "body": "Routine `npm update`. No behaviour change.",
+    "html_url": "https://github.com/acme/billing/pull/3"
+  },
+  "issue": null,
+  "files": [
+    {
+      "filename": "package-lock.json",
+      "status": "modified",
+      "additions": 3011,
+      "deletions": 2884,
+      "patch": "@@ -1,3 +1,3 @@\n-\"lodash\": \"4.17.21\"\n+\"lodash\": \"4.17.22\""
+    },
+    {
+      "filename": "yarn.lock",
+      "status": "modified",
+      "additions": 40,
+      "deletions": 38,
+      "patch": "@@ -1,2 +1,2 @@\n-lodash@4.17.21\n+lodash@4.17.22"
+    },
+    {
+      "filename": "node_modules/lodash/index.js",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "patch": "@@ -1,2 +1,2 @@\n-module.exports = old\n+module.exports = new"
+    }
+  ]
+}

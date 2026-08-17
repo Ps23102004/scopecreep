@@ -1,0 +1,50 @@
+{
+  "pr": {
+    "number": 12,
+    "title": "Fix timezone handling in invoice due-date calculation",
+    "body": "Due dates were computed in server-local time, so invoices near midnight UTC came out a day early for EU customers.\n\nCloses #11",
+    "html_url": "https://github.com/acme/billing/pull/12"
+  },
+  "issue": {
+    "number": 11,
+    "title": "Invoice due dates are off by one day for EU customers",
+    "body": "A customer in Berlin reports their invoice showing 2026-03-14 when it should be 2026-03-15. Looks like we're using naive datetimes."
+  },
+  "files": [
+    {
+      "filename": "src/billing/due_dates.py",
+      "status": "modified",
+      "additions": 24,
+      "deletions": 9,
+      "patch": "@@ -1,9 +1,24 @@\n-from datetime import datetime\n+from datetime import datetime, timezone\n+from zoneinfo import ZoneInfo\n \n-def due_date(invoice):\n-    return datetime.now() + invoice.terms\n+def due_date(invoice, tz=\"UTC\"):\n+    now = datetime.now(timezone.utc).astimezone(ZoneInfo(tz))\n+    return now + invoice.terms"
+    },
+    {
+      "filename": "src/billing/models.py",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 1,
+      "patch": "@@ -14,1 +14,3 @@\n-    terms = timedelta(days=30)\n+    terms = timedelta(days=30)\n+    timezone_name = \"UTC\""
+    },
+    {
+      "filename": "tests/test_due_dates.py",
+      "status": "modified",
+      "additions": 41,
+      "deletions": 2,
+      "patch": "@@ -1,2 +1,41 @@\n-def test_due_date():\n-    assert due_date(inv)\n+def test_due_date_respects_tz():\n+    assert due_date(inv, tz=\"Europe/Berlin\").date().isoformat() == \"2026-03-15\""
+    },
+    {
+      "filename": "poetry.lock",
+      "status": "modified",
+      "additions": 812,
+      "deletions": 640,
+      "patch": "@@ -1,3 +1,3 @@\n-tzdata = \"2024.1\"\n+tzdata = \"2026.1\""
+    },
+    {
+      "filename": "dist/billing.min.js",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "patch": "@@ -1 +1 @@\n-!function(){}()\n+!function(e){}()"
+    }
+  ]
+}

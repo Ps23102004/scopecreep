@@ -1,0 +1,64 @@
+{
+  "pr": {
+    "number": 48,
+    "title": "Add retry to the webhook sender",
+    "body": "Webhook deliveries fail permanently on a single 500. Adds three retries with backoff.\n\nFixes #47\n\nAlso snuck in the new pricing page and swapped our auth library while I was in here.",
+    "html_url": "https://github.com/acme/billing/pull/48"
+  },
+  "issue": {
+    "number": 47,
+    "title": "Webhook deliveries give up after one failure",
+    "body": "If the receiving endpoint 500s once, we never try again and the event is lost."
+  },
+  "files": [
+    {
+      "filename": "src/webhooks/sender.py",
+      "status": "modified",
+      "additions": 38,
+      "deletions": 6,
+      "patch": "@@ -10,6 +10,38 @@\n-    resp = post(url, payload)\n+    for attempt in range(3):\n+        resp = post(url, payload)\n+        if resp.ok:\n+            break\n+        sleep(2 ** attempt)"
+    },
+    {
+      "filename": "tests/test_sender.py",
+      "status": "added",
+      "additions": 55,
+      "deletions": 0,
+      "patch": "@@ -0,0 +1,55 @@\n+def test_retries_three_times():\n+    assert calls == 3"
+    },
+    {
+      "filename": "marketing/pricing.html",
+      "status": "added",
+      "additions": 240,
+      "deletions": 0,
+      "patch": "@@ -0,0 +1,240 @@\n+<h1>Pricing</h1>\n+<div class=\"tier\">Pro - $49/mo</div>"
+    },
+    {
+      "filename": "marketing/pricing.css",
+      "status": "added",
+      "additions": 130,
+      "deletions": 0,
+      "patch": "@@ -0,0 +1,130 @@\n+.tier { border: 1px solid #eee; }"
+    },
+    {
+      "filename": "src/auth/session.py",
+      "status": "modified",
+      "additions": 96,
+      "deletions": 88,
+      "patch": "@@ -1,88 +1,96 @@\n-import pyjwt\n+import authlib\n-def verify(token):\n+def verify(token, leeway=30):"
+    },
+    {
+      "filename": "src/utils/format.py",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 4,
+      "patch": "@@ -1,4 +1,4 @@\n-  def shout(s):\n-      return s.upper()\n-  def whisper(s):\n-      return s.lower()\n+def shout(s):\n+    return s.upper()\n+def whisper(s):\n+    return s.lower()"
+    },
+    {
+      "filename": "package-lock.json",
+      "status": "modified",
+      "additions": 1204,
+      "deletions": 998,
+      "patch": "@@ -1,3 +1,3 @@\n-\"authlib\": \"0.0.0\"\n+\"authlib\": \"1.3.0\""
+    }
+  ]
+}
