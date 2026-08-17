@@ -7,6 +7,6 @@
 # second tier here — the cascade will escalate on its own.
 chains:
   judge:
-    - model: gemma4:e4b-mlx
+    - model: gemma4:e2b-mlx
       samples: 3
       threshold: 0.7
