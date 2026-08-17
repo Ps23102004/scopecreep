@@ -12,7 +12,7 @@ license = {text = "MIT"}
 dependencies = [
     "requests",
     "pyyaml",
-    "llm-ladder",
+    "llm-ladder @ git+https://github.com/Ps23102004/llm-ladder.git",
     "typer",
 ]
 

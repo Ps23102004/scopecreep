@@ -7,7 +7,7 @@ along inside "add retry to the webhook sender". ScopeCreep reads the PR's title,
 linked issue, throws away the noise nobody reviews anyway (lockfiles, generated output,
 reformatting), classifies every remaining group of files as **core**, **supporting**, or
 **unrelated**, and rolls that up into a verdict with a drift score. It runs on local
-models through [llm-ladder](../llm-ladder)'s confidence-gated cascade, so a review costs
+models through [llm-ladder](https://github.com/Ps23102004/llm-ladder)'s confidence-gated cascade, so a review costs
 $0.00 and your diff never leaves the machine.
 
 ![scopecreep check running against a real PR, showing per-group classifications and a drift verdict](assets/scopecreep-demo.gif)
@@ -39,6 +39,10 @@ Judged in 5 cascade calls on local models — tier 0 held 5/5 calls, $0.00 API s
 pip install -e .
 ```
 
+This pulls [llm-ladder](https://github.com/Ps23102004/llm-ladder) straight from GitHub as
+part of the install (see the `dependencies` entry in `pyproject.toml`) — no separate
+clone or sibling checkout needed.
+
 ### Running tests
 
 ```bash
@@ -53,9 +57,10 @@ network. Drop the `-m` filter to also run the tests marked `network`.
 
 - **[Ollama](https://ollama.com/)** running at `127.0.0.1:11434` with the judge model
   pulled: `ollama pull gemma4:e4b-mlx`. Edit `chains.yaml` to point at any tag you have.
-- **[llm-ladder](../llm-ladder)** installed — ScopeCreep uses its cascade as the judge and
-  its ledger as the receipt. It escalates tiers only when the small model disagrees with
-  itself, so most groups are settled at tier 0.
+- **[llm-ladder](https://github.com/Ps23102004/llm-ladder)** — installed automatically by
+  `pip install -e .` (it's a git dependency in `pyproject.toml`). ScopeCreep uses its
+  cascade as the judge and its ledger as the receipt. It escalates tiers only when the
+  small model disagrees with itself, so most groups are settled at tier 0.
 - **`GITHUB_TOKEN`** — optional. Public PRs work without one; a token raises the rate
   limit from 60 to 5,000 requests/hour and is required for private repos.
 
@@ -68,6 +73,7 @@ scopecreep check owner/repo#123 --md         # markdown, paste into a PR comment
 scopecreep check owner/repo#123 --md --out review.md
 scopecreep check owner/repo#123 --model llama3.2   # override the judge for one run
 scopecreep serve                             # dashboard on http://127.0.0.1:8200
+SCOPECREEP_PORT=8300 scopecreep serve        # dashboard on a different port
 scopecreep readme-sample                     # refresh this README's example block
 ```
 
@@ -97,7 +103,8 @@ GET  /api/status/{id}                          -> {"state", "progress": [...], "
 
 `progress` is an append-only list of `{group, files, adds, dels, classification, reason}`;
 poll it and render whatever has arrived. `result` carries `{verdict, drift_score, summary,
-ledger}` once `state` is `done`.
+ledger, footer}` once `state` is `done` — `footer` is the same measured cost-summary line
+(cascade calls, tier-0 hold rate, $ spend) shown at the bottom of the CLI report.
 
 ## Why This Exists
 
